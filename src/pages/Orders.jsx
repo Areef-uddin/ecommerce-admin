@@ -61,11 +61,12 @@ export default function Orders() {
   };
   const handleReturnStatus = async (returnRequest, nextStatus) => {
     const isCod = ['Cash on Delivery', 'COD'].includes(returnRequest.payment_method);
+    const checkingPendingRefund = returnRequest.status === 'Refund Pending' && nextStatus === 'Refund Processed';
     const confirmManualRefund = isCod && nextStatus === 'Refund Processed'
       ? window.confirm('Confirm that the COD refund was transferred to the customer manually?')
       : true;
     if (!confirmManualRefund) return;
-    if (nextStatus === 'Refund Processed' && !isCod && !window.confirm(`Send ₹${returnRequest.refund_amount} back through Razorpay?`)) return;
+    if (nextStatus === 'Refund Processed' && !isCod && !checkingPendingRefund && !window.confirm(`Send ₹${returnRequest.refund_amount} back through Razorpay?`)) return;
     try {
       setUpdatingReturnId(returnRequest.id);
       await api.post(`/orders/returns/${returnRequest.id}/update_status/`, {
@@ -188,7 +189,7 @@ export default function Orders() {
                     {!['Refund Processed', 'Rejected'].includes(r.status) && <>
                       {r.status === 'Initiated' && !String(r.pickup_type).toLowerCase().startsWith('drop') && <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Pickup Scheduled')} className="btn-secondary">Schedule pickup</button>}
                       {(r.status === 'Pickup Scheduled' || (r.status === 'Initiated' && String(r.pickup_type).toLowerCase().startsWith('drop'))) && <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Pickup Received')} className="btn-secondary">Confirm item received</button>}
-                      {r.status === 'Pickup Received' && <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Refund Processed')} className="btn-primary">{updatingReturnId === r.id ? 'Processing…' : (['Cash on Delivery', 'COD'].includes(r.payment_method) ? 'Confirm manual refund' : 'Process refund')}</button>}
+                      {(r.status === 'Pickup Received' || r.status === 'Refund Pending') && <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Refund Processed')} className="btn-primary">{updatingReturnId === r.id ? 'Checking…' : r.status === 'Refund Pending' ? 'Check Razorpay status' : (['Cash on Delivery', 'COD'].includes(r.payment_method) ? 'Confirm manual refund' : 'Process refund')}</button>}
                       <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Rejected')} className="btn-secondary">Reject</button>
                     </>}
                   </td>
