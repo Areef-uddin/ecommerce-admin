@@ -180,7 +180,10 @@ export default function Orders() {
                   <td>{r.customer_name}<br /><small>{r.product_name}</small></td>
                   <td>{r.reason}<br /><small>{r.pickup_type}</small></td>
                   <td>₹{Number(r.refund_amount || 0).toFixed(2)}<br /><small>{r.payment_method}</small></td>
-                  <td>{r.status}</td>
+                  <td>
+                    {r.status}<br />
+                    <small>{r.timeline?.[r.timeline.length - 1]?.note || 'Awaiting review'}</small>
+                  </td>
                   <td style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     {!['Refund Processed', 'Rejected'].includes(r.status) && <>
                       {r.status === 'Initiated' && !String(r.pickup_type).toLowerCase().startsWith('drop') && <button disabled={updatingReturnId === r.id} onClick={() => handleReturnStatus(r, 'Pickup Scheduled')} className="btn-secondary">Schedule pickup</button>}
