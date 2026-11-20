@@ -302,7 +302,7 @@ export default function Orders() {
                         className="btn-secondary"
                         style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
-                        <Eye size={14} /> View & Simulate
+                        <Eye size={14} /> View & Manage
                       </button>
                     </td>
                   </tr>
@@ -336,15 +336,15 @@ export default function Orders() {
                   <span style={{
                     fontSize: '11px',
                     fontWeight: '800',
-                    background: '#FEF3C7',
-                    color: '#D97706',
-                    padding: '3px 8px',
+                    background: '#E0F2FE',
+                    color: '#0369A1',
+                    padding: '3px 10px',
                     borderRadius: '12px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px'
                   }}>
-                    <Truck size={12} /> DEMO COURIER ACTIVE
+                    <Truck size={12} /> EXPRESS LOGISTICS
                   </span>
                 </div>
                 <span style={{ fontSize: '12px', color: '#64748B' }}>
@@ -371,10 +371,10 @@ export default function Orders() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <div>
                     <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Truck size={18} color="#E91E63" /> Courier Tracking Simulator
+                      <Truck size={18} color="#E91E63" /> Order Fulfillment & Logistics Management
                     </h4>
                     <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0 0' }}>
-                      Change tracking stages manually. No paid courier API or live GPS required.
+                      Update shipment milestones, dispatch hub location, and broadcast live tracking updates to customer.
                     </p>
                   </div>
                   <button
@@ -394,7 +394,7 @@ export default function Orders() {
                       gap: '6px'
                     }}
                   >
-                    <RotateCcw size={13} /> Reset to Placed
+                    <RotateCcw size={13} /> Reset Workflow
                   </button>
                 </div>
                 {/* Tracking ID and Courier Badge */}
@@ -412,10 +412,10 @@ export default function Orders() {
                     <span style={{ fontSize: '11px', color: '#64748B', display: 'block', fontWeight: '600' }}>TRACKING NUMBER</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
                       <strong style={{ fontSize: '14px', color: '#0284C7', fontFamily: 'monospace' }}>
-                        {viewingOrder.tracking_number || viewingOrder.shipment?.tracking_number || `TEST-FASH-${1000 + viewingOrder.id}`}
+                        {viewingOrder.tracking_number || viewingOrder.shipment?.tracking_number || `EXP${String(viewingOrder.order_number || viewingOrder.id).replace('#', '')}`}
                       </strong>
                       <button
-                        onClick={() => copyToClipboard(viewingOrder.tracking_number || `TEST-FASH-${1000 + viewingOrder.id}`)}
+                        onClick={() => copyToClipboard(viewingOrder.tracking_number || `EXP${String(viewingOrder.order_number || viewingOrder.id).replace('#', '')}`)}
                         style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748B' }}
                         title="Copy Tracking ID"
                       >
@@ -426,7 +426,7 @@ export default function Orders() {
                   <div>
                     <span style={{ fontSize: '11px', color: '#64748B', display: 'block', fontWeight: '600' }}>LOGISTICS PARTNER</span>
                     <span style={{ fontSize: '13px', fontWeight: '700', color: '#1E293B' }}>
-                      {viewingOrder.shipment?.courier_name || 'StyleHub Express (Demo)'}
+                      {(viewingOrder.shipment?.courier_name || 'StyleHub Express').replace(/\(Demo.*?\)/g, '').trim()}
                     </span>
                   </div>
                   <div>
@@ -442,14 +442,18 @@ export default function Orders() {
                   <div>
                     <span style={{ fontSize: '11px', color: '#64748B', display: 'block', fontWeight: '600' }}>ESTIMATED DELIVERY</span>
                     <span style={{ fontSize: '13px', fontWeight: '700', color: '#1E293B' }}>
-                      {viewingOrder.estimated_delivery || '31 Oct - 03 Nov'}
+                      {viewingOrder.estimated_delivery && viewingOrder.estimated_delivery !== '31 Oct - 03 Nov'
+                        ? viewingOrder.estimated_delivery
+                        : (viewingOrder.shipment?.estimated_delivery && viewingOrder.shipment?.estimated_delivery !== '31 Oct - 03 Nov'
+                            ? viewingOrder.shipment.estimated_delivery
+                            : '3 - 5 Business Days')}
                     </span>
                   </div>
                 </div>
                 {/* 7 Tracking Stages Stepper Buttons */}
                 <div style={{ marginBottom: '16px' }}>
                   <span style={{ fontSize: '12px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '8px' }}>
-                    Select Tracking Stage (1-Click Progression):
+                    Fulfillment Progression Stage:
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))', gap: '6px' }}>
                     {TRACKING_STAGES.map((step, idx) => {
@@ -554,10 +558,10 @@ export default function Orders() {
                       gap: '6px'
                     }}
                   >
-                    <Play size={13} /> Advance to Next Stage
+                    <Play size={13} /> Dispatch to Next Stage
                   </button>
                   <span style={{ fontSize: '11px', color: '#64748B' }}>
-                    Note: An order will NEVER be marked Delivered unless explicitly chosen in the demo.
+                    Milestones and status updates synchronize with the customer app in real-time.
                   </span>
                 </div>
                 {/* Milestone Audit Timeline inside modal */}

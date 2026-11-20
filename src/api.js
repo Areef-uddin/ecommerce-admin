@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV
-  ? 'http://127.0.0.1:8000/api'
-  : '/api');
+const API_BASE_URL = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && window.location.origin
+    ? `${window.location.origin}/api`
+    : 'http://127.0.0.1:8000/api'
+);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
